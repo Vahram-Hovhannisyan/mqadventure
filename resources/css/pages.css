@@ -1,0 +1,335 @@
+/* ── pages.css — Admin Settings Page ── */
+
+/* Layout */
+.pages-layout {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 24px;
+    align-items: start;
+}
+
+/* Sticky sidebar nav */
+.pages-nav {
+    position: sticky;
+    top: 72px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.pages-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--slate-mid);
+    cursor: pointer;
+    border-left: 2px solid transparent;
+    transition: all .15s;
+    text-decoration: none;
+}
+
+.pages-nav-item:hover {
+    color: var(--slate);
+    background: var(--bg);
+}
+
+.pages-nav-item.active {
+    color: var(--blue);
+    background: var(--blue-light);
+    border-left-color: var(--blue);
+    font-weight: 600;
+}
+
+.pages-nav-item .nav-icon {
+    font-size: 15px;
+    width: 18px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+/* Section cards */
+.settings-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 20px;
+    scroll-margin-top: 72px;
+}
+
+.settings-section:last-of-type {
+    margin-bottom: 0;
+}
+
+.section-header {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.section-header-icon {
+    font-size: 16px;
+}
+
+.section-header h3 {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--slate);
+}
+
+.section-header p {
+    font-size: 12px;
+    color: var(--slate-soft);
+    margin-top: 1px;
+}
+
+.section-body {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+/* Field rows */
+.field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.field-row.col-1 {
+    grid-template-columns: 1fr;
+}
+
+.field-row.col-3 {
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
+/* Field */
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.field-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--slate-soft);
+}
+
+.field-hint {
+    font-size: 11px;
+    color: var(--slate-soft);
+    margin-top: 4px;
+}
+
+.field input[type="text"],
+.field input[type="email"],
+.field input[type="url"],
+.field input[type="number"],
+.field textarea {
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    color: var(--slate);
+    padding: 9px 12px;
+    border-radius: 7px;
+    font-family: inherit;
+    font-size: 13px;
+    outline: none;
+    transition: border-color .2s, box-shadow .2s;
+    width: 100%;
+}
+
+.field input:focus,
+.field textarea:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+    background: var(--surface);
+}
+
+.field textarea {
+    resize: vertical;
+    min-height: 72px;
+    line-height: 1.5;
+}
+
+/* Lang tabs */
+.lang-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.lang-tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 1.5px solid var(--border);
+    margin-bottom: 0;
+}
+
+.lang-tab {
+    padding: 5px 13px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    border: 1.5px solid transparent;
+    border-bottom: none;
+    border-radius: 5px 5px 0 0;
+    background: transparent;
+    color: var(--slate-soft);
+    transition: all .15s;
+    margin-bottom: -1.5px;
+}
+
+.lang-tab:hover {
+    color: var(--slate-mid);
+}
+
+.lang-tab.active {
+    background: var(--surface);
+    color: var(--blue);
+    border-color: var(--border);
+    border-bottom-color: var(--surface);
+}
+
+.lang-panel {
+    display: none;
+}
+
+.lang-panel.active {
+    display: block;
+}
+
+.lang-panel textarea,
+.lang-panel input {
+    border-radius: 0 4px 4px 4px;
+}
+
+/* Image upload field */
+.img-upload-wrap {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+}
+
+.img-preview {
+    width: 120px;
+    height: 80px;
+    border-radius: 7px;
+    border: 1.5px solid var(--border);
+    object-fit: cover;
+    background: var(--bg);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.img-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 6px;
+}
+
+.img-preview-empty {
+    font-size: 11px;
+    color: var(--slate-soft);
+    text-align: center;
+    padding: 8px;
+}
+
+.img-upload-controls {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.img-upload-controls .field-label {
+    margin-bottom: 0;
+}
+
+.img-file-input {
+    font-size: 12px;
+    color: var(--slate-mid);
+    background: var(--bg);
+    border: 1.5px dashed var(--border);
+    border-radius: 7px;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: border-color .2s;
+    width: 100%;
+}
+
+.img-file-input:hover {
+    border-color: var(--blue-mid);
+}
+
+.img-remove-btn {
+    font-size: 11px;
+    color: var(--red);
+    background: var(--red-light);
+    border: 1px solid #FECACA;
+    border-radius: 5px;
+    padding: 4px 10px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background .15s;
+    align-self: flex-start;
+}
+
+.img-remove-btn:hover {
+    background: #FEE2E2;
+}
+
+/* Save bar */
+.save-bar {
+    position: sticky;
+    bottom: 0;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    padding: 14px 0;
+    margin-top: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 5;
+}
+
+.save-bar-hint {
+    font-size: 12px;
+    color: var(--slate-soft);
+}
+
+/* Stat group */
+.stat-group {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+}
+
+.stat-group-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--slate-soft);
+    margin-bottom: 10px;
+}
+
+.stat-group .field-row {
+    gap: 10px;
+}

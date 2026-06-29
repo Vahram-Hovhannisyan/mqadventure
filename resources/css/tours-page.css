@@ -1,0 +1,537 @@
+/* ================================================================
+   tours-page.css  —  стили страницы /tours (tours.blade.php)
+   ================================================================ */
+
+/* ── Hero ── */
+.tours-hero {
+    position: relative;
+    background: linear-gradient(160deg, #0d1f0b 0%, #1a3a16 50%, #0f2a0c 100%);
+    padding: 140px 24px 90px;
+    text-align: center;
+    overflow: hidden;
+}
+.tours-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%234A7C40' fill-opacity='0.06'%3E%3Ccircle cx='30' cy='30' r='1.5'/%3E%3C/g%3E%3C/svg%3E");
+    pointer-events: none;
+}
+.tours-hero-eyebrow {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--orange, #c87533);
+    margin-bottom: 16px;
+    position: relative;
+}
+.tours-hero h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(56px, 9vw, 100px);
+    color: #edf2e8;
+    line-height: 0.92;
+    margin-bottom: 24px;
+    letter-spacing: 0.02em;
+    position: relative;
+}
+.tours-hero h1 span { color: var(--orange, #c87533); }
+.tours-hero-desc {
+    max-width: 580px;
+    margin: 0 auto 44px;
+    font-size: 17px;
+    color: rgba(237,242,232,0.65);
+    line-height: 1.7;
+    position: relative;
+}
+.tours-hero-stats {
+    display: flex;
+    justify-content: center;
+    gap: 56px;
+    margin-top: 52px;
+    padding-top: 44px;
+    border-top: 1px solid rgba(237,242,232,0.1);
+    position: relative;
+}
+.tours-hero-stats .stat-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 42px;
+    color: var(--orange, #c87533);
+    line-height: 1;
+}
+.tours-hero-stats .stat-label {
+    font-size: 11px;
+    color: rgba(237,242,232,0.45);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-top: 5px;
+}
+
+/* ── Mountains divider ── */
+.tours-divider {
+    display: block;
+    width: 100%;
+    line-height: 0;
+    background: #0f2a0c;
+    margin-bottom: -1px;
+}
+.tours-divider svg { display: block; }
+
+/* ── Filter bar ── */
+.tours-filter-wrap {
+    background: #fff;
+    border-bottom: 1px solid #E8EDE4;
+    position: sticky;
+    top: 64px;
+    z-index: 50;
+    box-shadow: 0 2px 12px rgba(15,42,12,0.06);
+}
+.tours-filter {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: flex;
+    gap: 4px;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+.tours-filter::-webkit-scrollbar { display: none; }
+.tours-filter-btn {
+    flex-shrink: 0;
+    padding: 15px 22px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #6B7C61;
+    background: none;
+    border: none;
+    border-bottom: 2.5px solid transparent;
+    cursor: pointer;
+    transition: color .2s, border-color .2s;
+    white-space: nowrap;
+    letter-spacing: 0.01em;
+}
+.tours-filter-btn:hover { color: #1a3a16; }
+.tours-filter-btn.active {
+    color: #1a3a16;
+    border-bottom-color: #4A7C40;
+}
+
+/* ── Tours list ── */
+.tours-list-wrap {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 68px 24px 110px;
+}
+.tours-list-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 44px;
+    gap: 16px;
+}
+.tours-list-header h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 46px;
+    color: #ffff;
+    line-height: 1;
+}
+.tours-count-label {
+    font-size: 13px;
+    color: #8A9E7E;
+    font-weight: 500;
+    padding-bottom: 8px;
+}
+
+/* ── Tour card (full layout) ── */
+.tour-card-full {
+    display: grid;
+    grid-template-columns: 400px 1fr;
+    background: #fff;
+    border: 1px solid #E8EDE4;
+    border-radius: 18px;
+    overflow: hidden;
+    margin-bottom: 28px;
+    transition: box-shadow .3s, transform .3s;
+}
+.tour-card-full:hover {
+    box-shadow: 0 16px 48px rgba(15,42,12,0.12);
+    transform: translateY(-3px);
+}
+
+/* Image */
+.tour-card-img {
+    position: relative;
+    height: 320px;
+    overflow: hidden;
+    background: #1a3a16;
+}
+.tour-card-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform .5s ease;
+    display: block;
+}
+.tour-card-full:hover .tour-card-img img { transform: scale(1.05); }
+.tour-card-img-ph {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 56px;
+    background: linear-gradient(135deg, #1a3a16, #0f2a0c);
+}
+.tour-card-badge {
+    position: absolute;
+    top: 18px;
+    left: 18px;
+    background: rgba(15,42,12,0.82);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    color: #edf2e8;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 20px;
+    border: 1px solid rgba(237,242,232,0.15);
+}
+.tour-card-badge.green { background: rgba(74,124,64,0.92); }
+
+/* Body */
+.tour-card-body {
+    padding: 36px 40px;
+    display: flex;
+    flex-direction: column;
+}
+.tour-card-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    color: #0f2a0c;
+    line-height: 1.05;
+    margin-bottom: 12px;
+    letter-spacing: 0.02em;
+}
+.tour-card-desc {
+    font-size: 14.5px;
+    color: #5A6E52;
+    line-height: 1.72;
+    margin-bottom: 28px;
+    flex: 1;
+}
+.tour-card-meta {
+    display: flex;
+    gap: 22px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+}
+.tour-card-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 13px;
+    color: #6B7C61;
+    font-weight: 500;
+}
+.tour-card-meta-item svg { color: #4A7C40; flex-shrink: 0; }
+
+/* Footer */
+.tour-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding-top: 22px;
+    border-top: 1px solid #E8EDE4;
+    flex-wrap: wrap;
+}
+.tour-card-price-from {
+    font-size: 11px;
+    color: #8A9E7E;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 3px;
+}
+.tour-card-price-val {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 34px;
+    color: #1a3a16;
+    line-height: 1;
+}
+.tour-card-price-val span {
+    font-family: Inter, sans-serif;
+    font-size: 13px;
+    color: #8A9E7E;
+    font-weight: 500;
+    margin-left: 5px;
+}
+.tour-card-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* ── Buttons ── */
+.btn-book-tour {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #1a3a16;
+    color: #edf2e8;
+    padding: 12px 24px;
+    border-radius: 9px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    border: none;
+    cursor: pointer;
+    transition: background .2s, transform .15s;
+    text-decoration: none;
+}
+.btn-book-tour:hover {
+    background: #0f2a0c;
+    transform: translateY(-1px);
+}
+.btn-route-tour {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: transparent;
+    color: #4A7C40;
+    padding: 12px 20px;
+    border-radius: 9px;
+    font-size: 13px;
+    font-weight: 600;
+    border: 1.5px solid #C5D8B8;
+    cursor: pointer;
+    transition: background .2s, border-color .2s;
+}
+.btn-route-tour:hover {
+    background: #F0F7EC;
+    border-color: #4A7C40;
+}
+
+/* ── Empty state ── */
+.tours-empty {
+    text-align: center;
+    padding: 100px 24px;
+    color: #8A9E7E;
+}
+.tours-empty-icon { font-size: 56px; margin-bottom: 18px; }
+.tours-empty h3 { font-size: 22px; color: #1a3a16; margin-bottom: 10px; font-weight: 600; }
+.tours-empty p { font-size: 15px; line-height: 1.6; }
+
+/* ── CTA Banner ── */
+.tours-cta {
+    background: linear-gradient(135deg, #1a3a16 0%, #2D5A27 100%);
+    padding: 88px 24px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+.tours-cta::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%234A7C40' fill-opacity='0.06'%3E%3Ccircle cx='40' cy='40' r='1.5'/%3E%3C/g%3E%3C/svg%3E");
+    pointer-events: none;
+}
+.tours-cta h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(38px, 5vw, 64px);
+    color: #edf2e8;
+    margin-bottom: 18px;
+    position: relative;
+}
+.tours-cta p {
+    color: rgba(237,242,232,0.62);
+    font-size: 16px;
+    max-width: 500px;
+    margin: 0 auto 40px;
+    line-height: 1.65;
+    position: relative;
+}
+
+/* ================================================================
+   BOOKING MODAL
+================================================================ */
+.booking-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1200;
+    background: rgba(10,24,8,0.72);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .28s;
+}
+.booking-modal-overlay.active {
+    opacity: 1;
+    pointer-events: all;
+}
+.booking-modal {
+    background: #fff;
+    border-radius: 22px;
+    width: 100%;
+    max-width: 560px;
+    max-height: 92vh;
+    overflow-y: auto;
+    transform: translateY(28px) scale(0.96);
+    transition: transform .28s cubic-bezier(0.34,1.1,0.64,1);
+    box-shadow: 0 36px 90px rgba(10,24,8,0.3);
+}
+.booking-modal-overlay.active .booking-modal {
+    transform: translateY(0) scale(1);
+}
+.booking-modal-header {
+    padding: 30px 34px 22px;
+    border-bottom: 1px solid #E8EDE4;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+.booking-modal-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    color: #0f2a0c;
+    line-height: 1;
+}
+.booking-modal-subtitle {
+    font-size: 13px;
+    color: #8A9E7E;
+    margin-top: 5px;
+}
+.booking-modal-close {
+    background: #F4F7F2;
+    border: none;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    color: #6B7C61;
+    transition: background .2s, color .2s;
+}
+.booking-modal-close:hover { background: #E8EDE4; color: #1a3a16; }
+
+.booking-modal-body { padding: 26px 34px 34px; }
+
+/* Form */
+.bm-form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+.bm-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 15px;
+}
+.bm-form-group label {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: #5A6E52;
+    text-transform: uppercase;
+}
+.bm-form-group input,
+.bm-form-group select,
+.bm-form-group textarea {
+    background: #F9FBF8;
+    border: 1.5px solid #E0E8D8;
+    color: #1a3a16;
+    padding: 11px 15px;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 14px;
+    outline: none;
+    transition: border-color .2s, box-shadow .2s;
+    width: 100%;
+    box-sizing: border-box;
+}
+.bm-form-group input:focus,
+.bm-form-group select:focus,
+.bm-form-group textarea:focus {
+    border-color: #4A7C40;
+    box-shadow: 0 0 0 3px rgba(74,124,64,0.14);
+    background: #fff;
+}
+.bm-form-group textarea { resize: vertical; min-height: 82px; }
+
+.bm-selected-tour {
+    background: #F0F7EC;
+    border: 1.5px solid #C5D8B8;
+    border-radius: 12px;
+    padding: 14px 18px;
+    margin-bottom: 22px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.bm-selected-tour-icon { font-size: 22px; }
+.bm-selected-tour-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1a3a16;
+}
+.bm-selected-tour-label {
+    font-size: 11px;
+    color: #6B7C61;
+    margin-bottom: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+.bm-submit {
+    width: 100%;
+    background: #1a3a16;
+    color: #edf2e8;
+    border: none;
+    border-radius: 11px;
+    padding: 15px;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    cursor: pointer;
+    transition: background .2s;
+    margin-top: 8px;
+}
+.bm-submit:hover { background: #0f2a0c; }
+.bm-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.bm-success {
+    display: none;
+    text-align: center;
+    padding: 24px 0 12px;
+}
+.bm-success-icon { font-size: 52px; margin-bottom: 14px; }
+.bm-success h3 { font-size: 22px; color: #1a3a16; margin-bottom: 10px; font-weight: 600; }
+.bm-success p { font-size: 14px; color: #6B7C61; line-height: 1.65; }
+
+/* ── Responsive ── */
+@media (max-width: 860px) {
+    .tour-card-full { grid-template-columns: 1fr; }
+    .tour-card-img { height: 240px; }
+    .tour-card-body { padding: 24px 22px 28px; }
+}
+@media (max-width: 680px) {
+    .tours-hero { padding: 110px 20px 70px; }
+    .tours-hero-stats { gap: 28px; }
+    .tours-list-header { flex-direction: column; align-items: flex-start; }
+    .bm-form-row { grid-template-columns: 1fr; }
+    .booking-modal-header,
+    .booking-modal-body { padding-left: 20px; padding-right: 20px; }
+    .tour-card-footer { flex-direction: column; align-items: flex-start; }
+    .tours-hero-stats { flex-wrap: wrap; gap: 22px; justify-content: center; }
+}
