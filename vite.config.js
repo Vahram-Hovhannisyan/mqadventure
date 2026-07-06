@@ -9,7 +9,11 @@ export default defineConfig({
                 'resources/css/gallery.css',
                 'resources/js/gallery.js',
                 'resources/css/tours-page.css',
-                'resources/js/tours-page.js'
+                'resources/js/tours-page.js',
+                'resources/css/admin.css',
+                'resources/css/admin-dashboard.css',
+                'resources/js/admin-dashboard.js',
+                'resources/js/admin-layout.js'
             ],
             refresh: true,
         }),

@@ -1,7 +1,10 @@
 @extends('layouts.app')
 
 @section('title', __('front.tours_page_title'))
-
+@push('head')
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://npmcdn.com/flatpickr/dist/flatpickr.min.css"/>
+@endpush
 @push('styles')
     @vite(['resources/css/tours.css', 'resources/css/tours-page.css'])
     <style>
@@ -284,12 +287,26 @@
                     <div class="bm-form-row">
                         <div class="bm-form-group">
                             <label for="bm_date">{{ __('front.form_date') }}</label>
-                            <input type="date" id="bm_date" name="date" min="{{ date('Y-m-d') }}"/>
+                            <input type="text" id="bm_date" name="date" autocomplete="off" required/>
                         </div>
                         <div class="bm-form-group">
                             <label for="bm_people">{{ __('front.form_people') }}</label>
                             <input type="number" id="bm_people" name="people" min="1" max="20" value="2"/>
                         </div>
+                    </div>
+
+                    <div class="bm-form-group">
+                        <label for="bm_time">{{ __('front.form_time') }}</label>
+                        <select id="bm_time" name="time" required>
+                            <option value="">{{ __('front.form_time_ph') }}</option>
+                        </select>
+                        <span id="bmTimeHint"></span>
+                    </div>
+
+                    <div class="bm-form-group quad-picker-group" id="bmQuadsGroup" style="display:none;">
+                        <label>{{ __('front.form_quads_label') }} <span class="quad-optional-tag">{{ __('front.form_quads_optional') }}</span></label>
+                        <div id="bmQuadsPicker" class="quad-grid"></div>
+                        <span id="bmQuadsHint" class="quad-hint"></span>
                     </div>
 
                     <div class="bm-form-group">
@@ -369,7 +386,216 @@
 @endpush
 
 @push('scripts')
-    {{-- tours.js — общий (карта, waypoint-модалка) --}}
+    <script src="https://npmcdn.com/flatpickr/dist/flatpickr.min.js"></script>
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/ru.js"></script>
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/hy.js"></script>
+
+    <script>
+        window.QUAD_I18N = {
+            timePh:          @json(__('front.form_time_ph')),
+            timeLoading:     @json(__('front.form_time_loading')),
+            timeChoose:      @json(__('front.form_time_choose')),
+            timeError:       @json(__('front.form_time_error')),
+            timeBlocked:     @json(__('front.form_time_blocked')),
+            timeBlockedHint: @json(__('front.form_time_blocked_hint')),
+            timeNone:        @json(__('front.form_time_none')),
+            timeNoneHint:    @json(__('front.form_time_none_hint')),
+            freeQuads:       @json(__('front.form_time_free_quads')),
+            quadsLoading: @json(__('front.form_quads_loading')),
+            quadsEmpty:   @json(__('front.form_quads_empty')),
+            quadsError:   @json(__('front.form_quads_error')),
+            quadsMax:     @json(__('front.form_quads_max', ['max' => ':max'])),
+            quadsSelected: @json(__('front.form_quads_selected', ['count' => ':count', 'max' => ':max'])),
+        };
+
+        (function () {
+            const laravelLocale = @json(app()->getLocale());
+            const localeMap = { ru: 'ru', hy: 'hy', am: 'hy', en: 'default' };
+            const fpLocale = localeMap[laravelLocale] || 'default';
+
+            const dateInput   = document.getElementById('bm_date');
+            const peopleInput = document.getElementById('bm_people');
+            const timeSelect  = document.getElementById('bm_time');
+            const timeHint    = document.getElementById('bmTimeHint');
+
+            const quadsGroup  = document.getElementById('bmQuadsGroup');
+            const quadsPicker = document.getElementById('bmQuadsPicker');
+            const quadsHint   = document.getElementById('bmQuadsHint');
+
+            const bmTourIdInput = document.getElementById('bmTourId');
+            const bmTourSelect  = document.getElementById('bmTourSelect');
+
+            if (!dateInput) return;
+
+            const bmDatePicker = flatpickr(dateInput, {
+                locale: fpLocale,
+                dateFormat: 'Y-m-d',
+                minDate: 'today',
+                altInput: true,
+                altFormat: 'j F Y',
+                disableMobile: true,
+                static: true,
+                onChange: loadSlots
+            });
+            // делаем доступным снаружи, если нужно сбрасывать при открытии модалки
+            window.bmDatePicker = bmDatePicker;
+
+            function currentTourId() {
+                return (bmTourIdInput && bmTourIdInput.value)
+                    || (bmTourSelect && bmTourSelect.value)
+                    || '';
+            }
+
+            let lastRequestId = 0;
+            let lastQuadsRequestId = 0;
+
+            function resetQuads() {
+                quadsGroup.style.display = 'none';
+                quadsPicker.innerHTML = '';
+                quadsHint.textContent = '';
+            }
+
+            function loadSlots() {
+                const tourId = currentTourId();
+                const date   = dateInput.value;
+                const people = peopleInput.value || 1;
+
+                resetQuads();
+
+                if (!tourId || !date) {
+                    timeSelect.innerHTML = `<option value="">${window.QUAD_I18N.timePh}</option>`;
+                    timeHint.textContent = '';
+                    return;
+                }
+
+                const requestId = ++lastRequestId;
+                timeSelect.innerHTML = `<option value="">${window.QUAD_I18N.timeLoading}</option>`;
+                timeHint.textContent = '';
+
+                const params = new URLSearchParams({ tour_id: tourId, date: date, people: people });
+
+                fetch(`{{ route('availability.slots') }}?` + params.toString())
+                    .then(r => r.json())
+                    .then(data => {
+                        if (requestId !== lastRequestId) return;
+
+                        if (data.blocked) {
+                            timeSelect.innerHTML = `<option value="">${window.QUAD_I18N.timeBlocked}</option>`;
+                            timeHint.textContent = window.QUAD_I18N.timeBlockedHint;
+                            return;
+                        }
+
+                        const available = data.slots.filter(s => s.available);
+
+                        if (!available.length) {
+                            timeSelect.innerHTML = `<option value="">${window.QUAD_I18N.timeNone}</option>`;
+                            timeHint.textContent = window.QUAD_I18N.timeNoneHint;
+                            return;
+                        }
+
+                        timeSelect.innerHTML = `<option value="">${window.QUAD_I18N.timeChoose}</option>` +
+                            available.map(s => `<option value="${s.time}">${s.time} (${window.QUAD_I18N.freeQuads} ${s.free_quads})</option>`).join('');
+                        timeHint.textContent = '';
+                    })
+                    .catch(() => {
+                        if (requestId !== lastRequestId) return;
+                        timeSelect.innerHTML = `<option value="">${window.QUAD_I18N.timeError}</option>`;
+                    });
+            }
+
+            function loadQuads() {
+                const tourId = currentTourId();
+                const date   = dateInput.value;
+                const time   = timeSelect.value;
+                const people = parseInt(peopleInput.value || '1', 10);
+
+                if (!tourId || !date || !time) {
+                    resetQuads();
+                    return;
+                }
+
+                const requestId = ++lastQuadsRequestId;
+                quadsGroup.style.display = 'block';
+                quadsPicker.innerHTML = `<div class="quad-empty">${window.QUAD_I18N.quadsLoading}</div>`;
+                quadsHint.textContent = '';
+
+                const params = new URLSearchParams({ tour_id: tourId, date: date, time: time });
+
+                fetch(`{{ route('availability.quads') }}?` + params.toString())
+                    .then(r => r.json())
+                    .then(quads => {
+                        if (requestId !== lastQuadsRequestId) return;
+
+                        if (!quads.length) {
+                            quadsPicker.innerHTML = `<div class="quad-empty">${window.QUAD_I18N.quadsEmpty}</div>`;
+                            return;
+                        }
+
+                        quadsPicker.innerHTML = quads.map(q => `
+                    <label class="quad-card" data-quad-card>
+                        <input type="checkbox" name="quads[]" value="${q.id}" class="quad-cb">
+                        <span class="quad-card-media">
+                            ${q.image_url
+                            ? `<img src="${q.image_url}" alt="${q.name}">`
+                            : `<span class="quad-card-media-ph">🏍️</span>`}
+                            <span class="quad-card-check">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                            </span>
+                        </span>
+                        <span class="quad-card-name">${q.name}</span>
+                    </label>
+                `).join('');
+
+                        enforceQuadLimit(people);
+                    })
+                    .catch(() => {
+                        if (requestId !== lastQuadsRequestId) return;
+                        quadsPicker.innerHTML = `<div class="quad-empty" style="color:#c0392b;">${window.QUAD_I18N.quadsError}</div>`;
+                    });
+            }
+
+            function enforceQuadLimit(maxSelect) {
+                function apply() {
+                    const checked = quadsPicker.querySelectorAll('.quad-cb:checked').length;
+
+                    quadsPicker.querySelectorAll('[data-quad-card]').forEach(card => {
+                        const cb = card.querySelector('.quad-cb');
+                        cb.disabled = !cb.checked && checked >= maxSelect;
+                        card.classList.toggle('is-selected', cb.checked);
+                        card.classList.toggle('is-disabled', cb.disabled);
+                    });
+
+                    quadsHint.textContent = checked >= maxSelect
+                        ? window.QUAD_I18N.quadsMax.replace(':max', maxSelect)
+                        : (checked > 0 ? window.QUAD_I18N.quadsSelected.replace(':count', checked).replace(':max', maxSelect) : '');
+                }
+                quadsPicker.removeEventListener('change', quadsPicker._quadHandler || (() => {}));
+                quadsPicker._quadHandler = apply;
+                quadsPicker.addEventListener('change', apply);
+                apply();
+            }
+
+            function debounce(fn, ms) {
+                let t;
+                return function (...args) {
+                    clearTimeout(t);
+                    t = setTimeout(() => fn.apply(this, args), ms);
+                };
+            }
+
+            if (bmTourSelect) bmTourSelect.addEventListener('change', loadSlots);
+            peopleInput.addEventListener('change', loadSlots);
+            peopleInput.addEventListener('input', debounce(loadSlots, 500));
+            timeSelect.addEventListener('change', loadQuads);
+
+            // если ваш openBookingModal() устанавливает bmTourId программно —
+            // вызывайте window.reloadBookingSlots() сразу после этого
+            window.reloadBookingSlots = loadSlots;
+        })();
+    </script>
+]    {{-- tours.js — общий (карта, waypoint-модалка) --}}
     @vite(['resources/js/tours.js', 'resources/js/tours-page.js'])
 
     @php

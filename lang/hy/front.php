@@ -7,6 +7,7 @@ return [
     'nav_tours'   => 'Շրջայցեր',
     'nav_gallery' => 'Պատկերասրահ',
     'nav_contact' => 'Կապ',
+    'login' => 'Մուտք',
 
     /* ── Hero ── */
     'hero_eyebrow'   => 'Քառանիվ շրջայցեր Մեղրաձորում',
@@ -103,5 +104,29 @@ return [
 
     'nav_home' => 'Գլխավոր',
 
-    'contact_socials_label' => 'Սոց ցանցեր'
+    'contact_socials_label' => 'Սոց ցանցեր',
+
+    // ── Booking form: time & quads ──────────────────────────────────────
+    'form_time'              => 'Մեկնարկի ժամը',
+    'form_time_ph'           => 'Նախ ընտրեք տուրը և ամսաթիվը',
+    'form_time_loading'      => 'Բեռնվում է...',
+    'form_time_choose'       => 'Ընտրեք ժամը',
+    'form_time_error'        => 'Բեռնման սխալ, փորձեք կրկին',
+    'form_time_blocked'      => 'Այս ամսաթվին ամրագրումը փակ է',
+    'form_time_blocked_hint' => 'Ընտրեք այլ ամսաթիվ։',
+    'form_time_none'         => 'Այս ամսաթվին ազատ ժամեր չկան',
+    'form_time_none_hint'    => 'Փորձեք այլ ամսաթիվ կամ նվազեցրեք մարդկանց քանակը։',
+    'form_time_free_quads'   => 'ազատ քվադրոցիկլ՝',
+
+    'form_quads_label'    => 'Ընտրել տեխնիկան',
+    'form_quads_optional' => 'ընտրովի',
+    'form_quads_loading'  => 'Տեխնիկան բեռնվում է...',
+    'form_quads_empty'    => 'Ազատ, կոնկրետ քվադրոցիկլ այս պահին չկա — կարող եք ամրագրել առանց ընտրության։',
+    'form_quads_error'    => 'Չհաջողվեց բեռնել տեխնիկայի ցանկը',
+    'form_quads_max'      => 'Ընտրված է առավելագույնը (:max)՝ նշված մարդկանց քանակի համար։',
+    'form_quads_selected' => 'Ընտրված է՝ :count-ը :max-ից',
+
+    'booking_success' => 'Ամրագրված է',
+    'form_date_ph' => 'Ամսաթիվ',
+    'footer_rights' => 'Բոլոր իրավունքները պաշտպանված են'
 ];

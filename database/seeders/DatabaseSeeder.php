@@ -13,21 +13,33 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // ── Admin user ───────────────────────────────────────────────────
-        Admin::firstOrCreate(['email' => 'admin@meghradzor.am'], [
-            'name'     => 'Admin',
-            'password' => Hash::make('meghradzor2025'),
+        Admin::firstOrCreate(['email' => 'karapetyangurgen6@gmail.com'], [
+            'name'     => 'Gurgen',
+            'password' => Hash::make('gurgen1998'),
+        ]);
+
+        Admin::firstOrCreate(['email' => 'hovhannisyand556@gmail.com'], [
+            'name'     => 'Davo',
+            'password' => Hash::make('davo1998'),
+        ]);
+
+        Admin::firstOrCreate(['email' => 'vrm99ov@gmail.com'], [
+            'name'     => 'Vahram',
+            'password' => Hash::make('vahram12'),
         ]);
 
         // ── Default site settings ────────────────────────────────────────
         $settings = [
             ['key' => 'site_title',  'value' => ['value' => 'Meghradzor Quad Adventure'],   'type' => 'text',    'group' => 'general'],
-            ['key' => 'admin_email', 'value' => ['value' => 'admin@meghradzor.am'],          'type' => 'text',    'group' => 'general'],
-            ['key' => 'phone',       'value' => ['value' => '+374 XX XXX XXX'],              'type' => 'text',    'group' => 'general'],
-            ['key' => 'whatsapp',    'value' => ['value' => '+374XXXXXXXXX'],                'type' => 'text',    'group' => 'general'],
-            ['key' => 'email',       'value' => ['value' => 'info@meghradzor.am'],           'type' => 'text',    'group' => 'general'],
-            ['key' => 'stat1_num',   'value' => ['value' => '500+'],                         'type' => 'text',    'group' => 'hero'],
-            ['key' => 'stat2_num',   'value' => ['value' => '12'],                           'type' => 'text',    'group' => 'hero'],
-            ['key' => 'stat3_num',   'value' => ['value' => '6'],                            'type' => 'text',    'group' => 'hero'],
+            ['key' => 'admin_email', 'value' => ['value' => 'mqadventure@gmail.com'],          'type' => 'text',    'group' => 'general'],
+            ['key' => 'phone',       'value' => ['value' => '+374 94 818 985'],              'type' => 'text',    'group' => 'general'],
+            ['key' => 'instagram',    'value' => ['value' => 'https://www.instagram.com/meghradzor_quad_adventure?igsh=ZnRicmJsY2lseDFn'],                'type' => 'text',    'group' => 'general'],
+            ['key' => 'facebook',    'value' => ['value' => 'https://www.facebook.com/share/19NzVXfP4k/'],                'type' => 'text',    'group' => 'general'],
+            ['key' => 'whatsapp',    'value' => ['value' => '+37494818985'],                'type' => 'text',    'group' => 'general'],
+            ['key' => 'email',       'value' => ['value' => 'mqadventure@gmail.com'],           'type' => 'text',    'group' => 'general'],
+            ['key' => 'stat1_num',   'value' => ['value' => '100+'],                         'type' => 'text',    'group' => 'hero'],
+            ['key' => 'stat2_num',   'value' => ['value' => '5'],                           'type' => 'text',    'group' => 'hero'],
+            ['key' => 'stat3_num',   'value' => ['value' => '3'],                            'type' => 'text',    'group' => 'hero'],
         ];
 
         foreach ($settings as $s) {
@@ -35,5 +47,11 @@ class DatabaseSeeder extends Seeder
                 'value' => $s['value'], 'type' => $s['type'], 'group' => $s['group'],
             ]);
         }
+
+        $this->call([
+            TourSeeder::class,
+            BlockedSlotSeeder::class,
+            QuadSeeder::class,
+        ]);
     }
 }

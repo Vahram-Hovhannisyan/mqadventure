@@ -13,6 +13,7 @@ class Tour extends Model
         'price_from', 'is_active', 'sort_order',
         'image', 'route_points',
         'name', 'badge', 'description',
+        'quads_total', 'seats_per_quad',
     ];
 
     protected $casts = [
@@ -100,6 +101,27 @@ class Tour extends Model
                 'media' => $media,
             ];
         }, $points);
+    }
+
+    // ── Quads / capacity ────────────────────────────────────────────────
+
+    /**
+     * How many quads are needed to seat the given number of people on this tour,
+     * based on seats_per_quad (1 = escort drives, 2 = client can drive with a passenger).
+     */
+    public function getRequiredQuads(int $people): int
+    {
+        $seats = max(1, (int) ($this->seats_per_quad ?: 2));
+        return (int) ceil($people / $seats);
+    }
+
+    /**
+     * Max people this tour can take in a single time slot given its quad fleet.
+     */
+    public function getMaxCapacity(): int
+    {
+        $seats = max(1, (int) ($this->seats_per_quad ?: 2));
+        return (int) ($this->quads_total ?: 0) * $seats;
     }
 
     public function scopeActive($query)

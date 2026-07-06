@@ -7,6 +7,7 @@ return [
     'nav_tours'   => 'Tours',
     'nav_gallery' => 'Gallery',
     'nav_contact' => 'Contact',
+    'login' => 'Login',
 
     /* ── Hero ── */
     'hero_eyebrow'   => 'Quad Tours in Meghradzor',
@@ -105,4 +106,26 @@ return [
 
     'contact_socials_label' => 'Social Media',
 
+    // ── Booking form: time & quads ──────────────────────────────────────
+    'form_time'              => 'Start time',
+    'form_time_ph'           => 'First choose a tour and date',
+    'form_time_loading'      => 'Loading...',
+    'form_time_choose'       => 'Choose a time',
+    'form_time_error'        => 'Failed to load, please try again',
+    'form_time_blocked'      => 'Bookings are closed for this date',
+    'form_time_blocked_hint' => 'Please choose another date.',
+    'form_time_none'         => 'No free time slots on this date',
+    'form_time_none_hint'    => 'Try another date or a smaller group size.',
+    'form_time_free_quads'   => 'free quads:',
+
+    'form_quads_label'    => 'Choose the vehicles',
+    'form_quads_optional' => 'optional',
+    'form_quads_loading'  => 'Loading vehicles...',
+    'form_quads_empty'    => 'No named vehicles are free right now — you can still book without choosing one.',
+    'form_quads_error'    => 'Could not load the list of vehicles',
+    'form_quads_max'      => 'Maximum selected (:max) for the given number of people.',
+    'form_quads_selected' => 'Selected: :count of :max',
+    'booking_success' => 'Successfully booked',
+    'form_date_ph' => 'Select date',
+    'footer_rights' => 'All rights reserved.',
 ];

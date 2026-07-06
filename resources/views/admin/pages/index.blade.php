@@ -190,8 +190,8 @@
 
 
                 {{-- ══════════════════════════════════════
-                     HERO
-                ══════════════════════════════════════ --}}
+                      HERO
+                 ══════════════════════════════════════ --}}
                 <div class="pg-section" id="sec-hero">
                     <div class="pg-section-head">
                         <span>🏔️</span>
@@ -205,6 +205,14 @@
                             'label'  => 'Фоновое изображение',
                             'hint'   => 'JPG/PNG/WebP, рекомендуется 1920×1080 px',
                             'current' => $settings->get('hero_bg_image')?->value['value'] ?? null,
+                        ])
+
+                        {{-- Hero bg video (приоритетнее картинки, если загружено) --}}
+                        @include('admin.pages._video_field', [
+                            'key'    => 'hero_bg_video',
+                            'label'  => 'Фоновое видео',
+                            'hint'   => 'MP4/WebM, короткий луп, рекомендуется до 20 МБ. Если загружено — используется вместо изображения',
+                            'current' => $settings->get('hero_bg_video')?->value['value'] ?? null,
                         ])
 
                         @include('admin.pages._lang_field', [
@@ -324,6 +332,8 @@
         </div>
     </form>
 
+    </form>
+
     @push('scripts')
         <script>
             /* Lang tabs */
@@ -347,13 +357,33 @@
                     thumb.innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;display:block;">`;
                 };
                 reader.readAsDataURL(file);
+                const removeBtn = document.getElementById('remove-btn-' + key);
+                if (removeBtn) removeBtn.style.display = '';
+                const removeInput = document.getElementById('remove-' + key);
+                if (removeInput) removeInput.value = '0';
             }
 
-            /* Remove image */
+            /* Video preview */
+            function previewVideo(input, key) {
+                const file = input.files[0];
+                if (!file) return;
+                const url = URL.createObjectURL(file);
+                const thumb = document.getElementById('thumb-' + key);
+                thumb.innerHTML = `<video src="${url}" muted loop autoplay style="width:100%;height:100%;object-fit:cover;display:block;"></video>`;
+                document.getElementById('remove-btn-' + key).style.display = '';
+                document.getElementById('remove-' + key).value = '0';
+            }
+
+            /* Remove image (legacy, kept for compatibility) */
             function removeImg(key) {
+                removeMedia(key, 'image');
+            }
+
+            /* Unified remove for image or video fields */
+            function removeMedia(key, type = 'image') {
                 document.getElementById('remove-' + key).value = '1';
                 document.getElementById('thumb-' + key).innerHTML =
-                    '<div class="img-thumb-empty">Нет фото</div>';
+                    `<div class="img-thumb-empty">${type === 'video' ? 'Нет видео' : 'Нет фото'}</div>`;
                 document.getElementById('remove-btn-' + key).style.display = 'none';
             }
 

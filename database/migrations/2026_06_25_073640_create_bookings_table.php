@@ -13,6 +13,9 @@ return new class extends Migration {
             $table->string('name');
             $table->string('phone');
             $table->date('date')->nullable();
+            $table->time('time')->nullable()->after('date');
+            $table->decimal('duration_hours', 4, 1)->nullable()->after('time');
+            $table->unsignedTinyInteger('quads_used')->nullable()->after('duration_hours');
             $table->integer('people')->default(1);
             $table->text('comment')->nullable();
             $table->string('status')->default('new'); // new | confirmed | cancelled | completed

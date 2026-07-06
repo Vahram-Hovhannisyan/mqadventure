@@ -7,6 +7,7 @@ return [
     'nav_tours'   => 'Туры',
     'nav_gallery' => 'Галерея',
     'nav_contact' => 'Контакты',
+    'login' => 'Вход',
 
     /* ── Hero ── */
     'hero_eyebrow'   => 'Квадротуры в Меградзоре',
@@ -102,5 +103,30 @@ return [
     'close'            => 'Закрыть',
 
     'nav_home' => 'В главную',
-    'contact_socials_label' => 'Социальные сетиh'
+    'contact_socials_label' => 'Социальные сети',
+
+    // ── Booking form: time & quads ──────────────────────────────────────
+    'form_time'              => 'Время начала',
+    'form_time_ph'           => 'Сначала выберите тур и дату',
+    'form_time_loading'      => 'Загрузка...',
+    'form_time_choose'       => 'Выберите время',
+    'form_time_error'        => 'Ошибка загрузки, попробуйте ещё раз',
+    'form_time_blocked'      => 'На эту дату бронирование закрыто',
+    'form_time_blocked_hint' => 'Выберите другую дату.',
+    'form_time_none'         => 'Нет свободного времени на эту дату',
+    'form_time_none_hint'    => 'Попробуйте другую дату или уменьшите количество человек.',
+    'form_time_free_quads'   => 'свободно кв.:',
+
+    'form_quads_label'    => 'Выбрать технику',
+    'form_quads_optional' => 'необязательно',
+    'form_quads_loading'  => 'Загрузка техники...',
+    'form_quads_empty'    => 'Свободной именной техники сейчас нет — заявку можно оформить без выбора.',
+    'form_quads_error'    => 'Не удалось загрузить список техники',
+    'form_quads_max'      => 'Выбрано максимум (:max) для указанного числа людей.',
+    'form_quads_selected' => 'Выбрано: :count из :max',
+
+    'form_date_ph' => 'Дата',
+    'footer_rights' => 'Все права защищены'
+
+
 ];

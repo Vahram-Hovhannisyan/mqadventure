@@ -1,12 +1,141 @@
+<?php $__env->startPush('head'); ?>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://npmcdn.com/flatpickr/dist/flatpickr.min.css"/>
+<?php $__env->stopPush(); ?>
+
 <?php $__env->startPush('styles'); ?>
     <?php echo app('Illuminate\Foundation\Vite')(['resources/css/tours.css']); ?>
+    <style>
+        .quad-picker-group label { display: flex; align-items: center; gap: 8px; }
+        .quad-optional-tag {
+            font-size: 11px;
+            font-weight: 500;
+            color: rgba(148, 163, 184, 0.9);
+            background: rgba(148, 163, 184, 0.12);
+            border-radius: 20px;
+            padding: 2px 9px;
+            text-transform: none;
+        }
+
+        .quad-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .quad-card {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 8px 9px;
+            border-radius: 10px;
+            border: 1.5px solid rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.03);
+            cursor: pointer;
+            text-align: center;
+            transition: border-color .15s ease, background .15s ease, transform .1s ease;
+        }
+        .quad-card:hover:not(.is-disabled) {
+            border-color: rgba(74, 124, 64, 0.55);
+            background: rgba(74, 124, 64, 0.08);
+            transform: translateY(-1px);
+        }
+        .quad-card.is-selected {
+            border-color: var(--sage, #4A7C40);
+            background: rgba(74, 124, 64, 0.16);
+        }
+        .quad-card.is-disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .quad-card .quad-cb {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+            pointer-events: none;
+        }
+
+        .quad-card-media {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            border-radius: 8px;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.06);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .quad-card-media img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .quad-card-media-ph { font-size: 26px; opacity: 0.5; }
+
+        .quad-card-check {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 19px;
+            height: 19px;
+            border-radius: 50%;
+            background: var(--sage, #4A7C40);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transform: scale(0.6);
+            transition: opacity .12s ease, transform .12s ease;
+        }
+        .quad-card.is-selected .quad-card-check {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .quad-card-name {
+            font-size: 12px;
+            line-height: 1.3;
+            color: inherit;
+        }
+
+        .quad-hint {
+            display: block;
+            font-size: 12px;
+            color: var(--slate-soft, #94a3b8);
+            margin-top: 8px;
+        }
+
+        .quad-empty {
+            font-size: 13px;
+            color: var(--slate-soft, #94a3b8);
+            padding: 6px 0;
+        }
+    </style>
 <?php $__env->stopPush(); ?>
 
 <?php $__env->startSection('content'); ?>
 
     
-    <?php $heroBg = \App\Models\SiteSetting::get('hero_bg_image'); ?>
-    <div class="hero" <?php if($heroBg): ?> style="background-image:url('<?php echo e(asset('storage/' . $heroBg)); ?>'); background-size:cover; background-position:center;" <?php endif; ?>>
+    
+    <?php
+        $heroBg    = \App\Models\SiteSetting::get('hero_bg_image');
+        $heroVideo = \App\Models\SiteSetting::get('hero_bg_video');
+    ?>
+    <div class="hero" <?php if($heroBg && !$heroVideo): ?> style="background-image:url('<?php echo e(asset('storage/' . $heroBg)); ?>'); background-size:cover; background-position:center;" <?php endif; ?>>
+        <?php if($heroVideo): ?>
+            <video class="hero-bg-video" autoplay muted loop playsinline
+                   <?php if($heroBg): ?> poster="<?php echo e(asset('storage/' . $heroBg)); ?>" <?php endif; ?>>
+                <source src="<?php echo e(asset('storage/' . $heroVideo)); ?>" type="video/mp4">
+            </video>
+        <?php endif; ?>
         <div class="hero-bg"></div>
         <div class="hero-mountains">
             <svg viewBox="0 0 1440 320" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
@@ -391,7 +520,7 @@
                     </div>
                 <?php endif; ?>
 
-                <form action="<?php echo e(route('booking.store')); ?>" method="POST">
+                <form action="<?php echo e(route('booking.store')); ?>" method="POST" id="bookingForm">
                     <?php echo csrf_field(); ?>
                     <div class="form-row">
                         <div class="form-group">
@@ -425,32 +554,93 @@ endif;
 unset($__errorArgs, $__bag); ?>
                         </div>
                     </div>
+
                     <div class="form-group">
                         <label><?php echo e(__('front.form_tour')); ?></label>
-                        <select name="tour_id">
+                        <select name="tour_id" id="bookingTourSelect" required>
                             <option value=""><?php echo e(__('front.form_tour_ph')); ?></option>
                             <?php $__currentLoopData = \App\Models\Tour::active()->get(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $tour): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                <option value="<?php echo e($tour->id); ?>" <?php echo e(old('tour_id') == $tour->id ? 'selected' : ''); ?>>
+                                <option value="<?php echo e($tour->id); ?>"
+                                        data-max-people="<?php echo e($tour->getMaxCapacity()); ?>"
+                                    <?php echo e(old('tour_id') == $tour->id ? 'selected' : ''); ?>>
                                     <?php echo e($tour->getName()); ?>
 
                                 </option>
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </select>
+                        <?php $__errorArgs = ['tour_id'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                        <span style="color:#f87171; font-size:12px;"><?php echo e($message); ?></span>
+                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                     </div>
+
                     <div class="form-row">
                         <div class="form-group">
                             <label><?php echo e(__('front.form_date')); ?></label>
-                            <input type="date" name="date" value="<?php echo e(old('date')); ?>" min="<?php echo e(date('Y-m-d')); ?>"/>
+                            <input type="text" name="date" id="bookingDate" value="<?php echo e(old('date')); ?>"
+                                   autocomplete="off" placeholder="<?php echo e(__('front.form_date_ph') ?? ''); ?>" required/>
+                            <?php $__errorArgs = ['date'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                            <span style="color:#f87171; font-size:12px;"><?php echo e($message); ?></span>
+                            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                         </div>
                         <div class="form-group">
                             <label><?php echo e(__('front.form_people')); ?></label>
-                            <input type="number" name="people" min="1" max="20" value="<?php echo e(old('people', 2)); ?>"/>
+                            <input type="number" name="people" id="bookingPeople" min="1" max="20" value="<?php echo e(old('people', 2)); ?>"/>
+                            <?php $__errorArgs = ['people'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                            <span style="color:#f87171; font-size:12px;"><?php echo e($message); ?></span>
+                            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                         </div>
                     </div>
+
+                    <div class="form-group">
+                        <label><?php echo e(__('front.form_time')); ?></label>
+                        <select name="time" id="bookingTimeSelect" required>
+                            <option value=""><?php echo e(__('front.form_time_ph')); ?></option>
+                        </select>
+                        <span id="bookingTimeHint" style="font-size:12px; color:var(--slate-soft, #94a3b8); margin-top:4px;"></span>
+                        <?php $__errorArgs = ['time'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                        <span style="color:#f87171; font-size:12px;"><?php echo e($message); ?></span>
+                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                    </div>
+
+                    <div class="form-group quad-picker-group" id="quadsGroup" style="display:none;">
+                        <label><?php echo e(__('front.form_quads_label')); ?> <span class="quad-optional-tag"><?php echo e(__('front.form_quads_optional')); ?></span></label>
+                        <div id="quadsPicker" class="quad-grid"></div>
+                        <span id="quadsHint" class="quad-hint"></span>
+                    </div>
+
                     <div class="form-group">
                         <label><?php echo e(__('front.form_comment')); ?></label>
                         <textarea name="comment" placeholder="<?php echo e(__('front.form_comment_ph')); ?>"><?php echo e(old('comment')); ?></textarea>
                     </div>
+
                     <button type="submit" class="btn-primary" style="border:none; cursor:pointer; width:100%;">
                         <?php echo e(__('front.form_submit')); ?>
 
@@ -495,6 +685,211 @@ unset($__errorArgs, $__bag); ?>
         function closeLightbox() {
             document.getElementById('lightbox').style.display = 'none';
         }
+    </script>
+
+    <script>
+        window.QUAD_I18N = {
+            timePh:          <?php echo json_encode(__('front.form_time_ph'), 15, 512) ?>,
+            timeLoading:     <?php echo json_encode(__('front.form_time_loading'), 15, 512) ?>,
+            timeChoose:      <?php echo json_encode(__('front.form_time_choose'), 15, 512) ?>,
+            timeError:       <?php echo json_encode(__('front.form_time_error'), 15, 512) ?>,
+            timeBlocked:     <?php echo json_encode(__('front.form_time_blocked'), 15, 512) ?>,
+            timeBlockedHint: <?php echo json_encode(__('front.form_time_blocked_hint'), 15, 512) ?>,
+            timeNone:        <?php echo json_encode(__('front.form_time_none'), 15, 512) ?>,
+            timeNoneHint:    <?php echo json_encode(__('front.form_time_none_hint'), 15, 512) ?>,
+            freeQuads:       <?php echo json_encode(__('front.form_time_free_quads'), 15, 512) ?>,
+
+            quadsLoading: <?php echo json_encode(__('front.form_quads_loading'), 15, 512) ?>,
+            quadsEmpty:   <?php echo json_encode(__('front.form_quads_empty'), 15, 512) ?>,
+            quadsError:   <?php echo json_encode(__('front.form_quads_error'), 15, 512) ?>,
+            quadsMax:     <?php echo json_encode(__('front.form_quads_max', ['max' => ':max']), 512) ?>,
+            quadsSelected: <?php echo json_encode(__('front.form_quads_selected', ['count' => ':count', 'max' => ':max'])) ?>,
+        };
+    </script>
+    <script src="https://npmcdn.com/flatpickr/dist/flatpickr.min.js"></script>
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/ru.js"></script>
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/hy.js"></script>
+
+    <script>
+        (function () {
+            // локаль Laravel -> код локали flatpickr
+            const laravelLocale = <?php echo json_encode(app()->getLocale(), 15, 512) ?>;
+            const localeMap = { ru: 'ru', hy: 'hy', am: 'hy', en: 'default' };
+            const fpLocale = localeMap[laravelLocale] || 'default';
+
+            window.bookingDatePicker = flatpickr('#bookingDate', {
+                locale: fpLocale,
+                dateFormat: 'Y-m-d',
+                minDate: 'today',
+                altInput: true,
+                altFormat: 'j F Y',
+                disableMobile: true
+            });
+        })();
+    </script>
+    <script>
+
+        (function () {
+            const tourSelect  = document.getElementById('bookingTourSelect');
+            const dateInput   = document.getElementById('bookingDate');
+            const peopleInput = document.getElementById('bookingPeople');
+            const timeSelect  = document.getElementById('bookingTimeSelect');
+            const timeHint    = document.getElementById('bookingTimeHint');
+
+            const quadsGroup  = document.getElementById('quadsGroup');
+            const quadsPicker = document.getElementById('quadsPicker');
+            const quadsHint   = document.getElementById('quadsHint');
+
+            let lastRequestId = 0;
+            let lastQuadsRequestId = 0;
+
+            function loadSlots() {
+                const tourId = tourSelect.value;
+                const date   = dateInput.value;
+                const people = peopleInput.value || 1;
+
+                resetQuads();
+
+                if (!tourId || !date) {
+                    timeSelect.innerHTML = `<option value="">${window.QUAD_I18N.timePh}</option>`;
+                    timeHint.textContent = '';
+                    return;
+                }
+
+                const requestId = ++lastRequestId;
+                timeSelect.innerHTML = `<option value="">${window.QUAD_I18N.timeLoading}</option>`;
+                timeHint.textContent = '';
+
+                const params = new URLSearchParams({ tour_id: tourId, date: date, people: people });
+
+                fetch(`<?php echo e(route('availability.slots')); ?>?` + params.toString())
+                    .then(r => r.json())
+                    .then(data => {
+                        if (requestId !== lastRequestId) return; // stale response, ignore
+
+                        if (data.blocked) {
+                            timeSelect.innerHTML = `<option value="">${window.QUAD_I18N.timeBlocked}</option>`;
+                            timeHint.textContent = window.QUAD_I18N.timeBlockedHint;
+                            return;
+                        }
+
+                        const available = data.slots.filter(s => s.available);
+
+                        if (!available.length) {
+                            timeSelect.innerHTML = `<option value="">${window.QUAD_I18N.timeNone}</option>`;
+                            timeHint.textContent = window.QUAD_I18N.timeNoneHint;
+                            return;
+                        }
+
+                        timeSelect.innerHTML = `<option value="">${window.QUAD_I18N.timeChoose}</option>` +
+                            available.map(s => `<option value="${s.time}">${s.time} (${window.QUAD_I18N.freeQuads} ${s.free_quads})</option>`).join('');
+                        timeHint.textContent = '';
+                    })
+                    .catch(() => {
+                        if (requestId !== lastRequestId) return;
+                        timeSelect.innerHTML = `<option value="">${window.QUAD_I18N.timeError}</option>`;
+                    });
+            }
+
+            function resetQuads() {
+                quadsGroup.style.display = 'none';
+                quadsPicker.innerHTML = '';
+                quadsHint.textContent = '';
+            }
+
+            function loadQuads() {
+                const tourId = tourSelect.value;
+                const date   = dateInput.value;
+                const time   = timeSelect.value;
+                const people = parseInt(peopleInput.value || '1', 10);
+
+                if (!tourId || !date || !time) {
+                    resetQuads();
+                    return;
+                }
+
+                const requestId = ++lastQuadsRequestId;
+                quadsGroup.style.display = 'block';
+                quadsPicker.innerHTML = `<div class="quad-empty">${window.QUAD_I18N.quadsLoading}</div>`;
+                quadsHint.textContent = '';
+
+                const params = new URLSearchParams({ tour_id: tourId, date: date, time: time });
+
+                fetch(`<?php echo e(route('availability.quads')); ?>?` + params.toString())
+                    .then(r => r.json())
+                    .then(quads => {
+                        if (requestId !== lastQuadsRequestId) return;
+
+                        if (!quads.length) {
+                            quadsPicker.innerHTML = `<div class="quad-empty">${window.QUAD_I18N.quadsEmpty}</div>`;
+                            return;
+                        }
+
+                        quadsPicker.innerHTML = quads.map(q => `
+                            <label class="quad-card" data-quad-card>
+                                <input type="checkbox" name="quads[]" value="${q.id}" class="quad-cb">
+                                <span class="quad-card-media">
+                                    ${q.image_url
+                            ? `<img src="${q.image_url}" alt="${q.name}">`
+                            : `<span class="quad-card-media-ph">🏍️</span>`}
+                                    <span class="quad-card-check">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                                            <polyline points="20 6 9 17 4 12"/>
+                                        </svg>
+                                    </span>
+                                </span>
+                                <span class="quad-card-name">${q.name}</span>
+                            </label>
+                        `).join('');
+
+                        enforceQuadLimit(people);
+                    })
+                    .catch(() => {
+                        if (requestId !== lastQuadsRequestId) return;
+                        quadsPicker.innerHTML = `<div class="quad-empty" style="color:#f87171;">${window.QUAD_I18N.quadsError}</div>`;
+                    });
+            }
+
+            function enforceQuadLimit(maxSelect) {
+                function apply() {
+                    const checked = quadsPicker.querySelectorAll('.quad-cb:checked').length;
+
+                    quadsPicker.querySelectorAll('[data-quad-card]').forEach(card => {
+                        const cb = card.querySelector('.quad-cb');
+                        cb.disabled = !cb.checked && checked >= maxSelect;
+                        card.classList.toggle('is-selected', cb.checked);
+                        card.classList.toggle('is-disabled', cb.disabled);
+                    });
+
+                    quadsHint.textContent = checked >= maxSelect
+                        ? window.QUAD_I18N.quadsMax.replace(':max', maxSelect)
+                        : (checked > 0 ? window.QUAD_I18N.quadsSelected.replace(':count', checked).replace(':max', maxSelect) : '');
+                }
+                quadsPicker.removeEventListener('change', quadsPicker._quadHandler || (() => {}));
+                quadsPicker._quadHandler = apply;
+                quadsPicker.addEventListener('change', apply);
+                apply();
+            }
+
+            tourSelect.addEventListener('change', loadSlots);
+            dateInput.addEventListener('change', loadSlots);
+            peopleInput.addEventListener('change', loadSlots);
+            peopleInput.addEventListener('input', debounce(loadSlots, 500));
+            timeSelect.addEventListener('change', loadQuads);
+
+            function debounce(fn, ms) {
+                let t;
+                return function (...args) {
+                    clearTimeout(t);
+                    t = setTimeout(() => fn.apply(this, args), ms);
+                };
+            }
+
+            // Load initial slots if form was re-rendered after a validation error (old() values present)
+            if (tourSelect.value && dateInput.value) {
+                loadSlots();
+            }
+        })();
     </script>
 <?php $__env->stopPush(); ?>
 

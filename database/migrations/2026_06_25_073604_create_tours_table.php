@@ -15,7 +15,9 @@ return new class extends Migration {
             $table->integer('duration_max');   // hours max
             $table->integer('people_min');
             $table->integer('people_max');
-            $table->integer('price_from');     // AMD
+            $table->integer('price_from');
+            $table->unsignedTinyInteger('quads_total')->default(4)->after('price_from');
+            $table->unsignedTinyInteger('seats_per_quad')->default(2)->after('quads_total');
             $table->boolean('is_active')->default(true);
             $table->integer('sort_order')->default(0);
             $table->string('image')->nullable();

@@ -25,6 +25,16 @@
         </div>
     </div>
 
+    @if($errors->any())
+        <div class="card" style="border-color:#EF4444; margin-bottom:16px;">
+            <div class="card-body" style="color:#EF4444; font-size:13px;">
+                @foreach($errors->all() as $error)
+                    <div>⚠️ {{ $error }}</div>
+                @endforeach
+            </div>
+        </div>
+    @endif
+
     <div style="display: grid; grid-template-columns: 1fr 340px; gap: 20px; align-items: start;">
 
         {{-- Main info --}}
@@ -107,6 +117,67 @@
                             <div style="font-size: 13px; line-height: 1.6; color: var(--slate);">{{ $booking->comment }}</div>
                         </div>
                     @endif
+                </div>
+            </div>
+
+            {{-- ══════════════════════════════════════
+                 NEW: Schedule (date / time / duration / quads)
+            ══════════════════════════════════════ --}}
+            <div class="card">
+                <div class="card-header"><h3>🕐 Расписание и квадроциклы</h3></div>
+                <div class="card-body">
+
+                    @if($booking->tour)
+                        <div style="font-size:12px; color:var(--slate-soft); margin-bottom:16px; background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:10px 12px;">
+                            Тур «{{ $booking->tour->getName() }}»: всего квадроциклов —
+                            <strong>{{ $booking->tour->quads_total }}</strong>,
+                            мест на одном — <strong>{{ $booking->tour->seats_per_quad }}</strong>
+                            (макс. вместимость: {{ $booking->tour->getMaxCapacity() }} чел.)
+                        </div>
+                    @endif
+
+                    <form method="POST" action="{{ route('admin.booking.updateSchedule', $booking) }}">
+                        @csrf @method('PATCH')
+
+                        <div class="form-row" style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+                            <div class="form-group">
+                                <label>Дата</label>
+                                <input type="date" name="date"
+                                       value="{{ old('date', $booking->date?->format('Y-m-d')) }}" required/>
+                            </div>
+                            <div class="form-group">
+                                <label>Время начала</label>
+                                <input type="time" name="time"
+                                       value="{{ old('time', $booking->time ? substr($booking->time, 0, 5) : '') }}" required/>
+                            </div>
+                        </div>
+
+                        <div class="form-row" style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:14px;">
+                            <div class="form-group">
+                                <label>Людей</label>
+                                <input type="number" name="people" min="1" max="20"
+                                       value="{{ old('people', $booking->people) }}" required/>
+                            </div>
+                            <div class="form-group">
+                                <label>Факт. длительность (ч)</label>
+                                <input type="number" name="duration_hours" step="0.5" min="0.5"
+                                       value="{{ old('duration_hours', $booking->duration_hours) }}"/>
+                                <span style="font-size:11px; color:var(--slate-soft);">
+                                    Пусто = использовать duration_max тура автоматически
+                                </span>
+                            </div>
+                        </div>
+
+                        <div style="margin-top:14px; font-size:12px; color:var(--slate-soft);">
+                            Квадроциклов будет задействовано:
+                            <strong style="color:var(--slate);">{{ $booking->quads_used ?? '—' }}</strong>
+                            (пересчитывается автоматически при сохранении, исходя из количества людей)
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" style="width:100%; margin-top:16px;">
+                            💾 Сохранить расписание
+                        </button>
+                    </form>
                 </div>
             </div>
 

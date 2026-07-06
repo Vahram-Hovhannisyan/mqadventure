@@ -2,7 +2,10 @@
 
 use App\Http\Controllers\Admin;
 use App\Http\Controllers\Admin\BookingController;
+use App\Http\Controllers\Admin\CalendarController;
+use App\Http\Controllers\Admin\QuadController;
 use App\Http\Controllers\Front;
+use App\Http\Controllers\Front\AvailabilityController;
 use Illuminate\Support\Facades\Route;
 
 // ── Language switch ───────────────────────────────────────────────────────────
@@ -50,7 +53,22 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:admin'])->group(functi
 
     Route::get('bookings/{booking}/pdf', [BookingController::class, 'exportPdf'])
         ->name('booking.pdf');
-});
 
+    Route::patch('/booking/{booking}/schedule', [\App\Http\Controllers\Admin\BookingController::class, 'updateSchedule'])
+        ->name('booking.updateSchedule');
+    Route::get('/booking/available-quads', [BookingController::class, 'availableQuads']);
+
+    Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar.index');
+    Route::get('/calendar/events', [CalendarController::class, 'events'])->name('calendar.events');
+    Route::post('/calendar/block', [CalendarController::class, 'storeBlock'])->name('calendar.block.store');
+    Route::delete('/calendar/block/{blockedSlot}', [CalendarController::class, 'destroyBlock'])->name('calendar.block.destroy');
+
+    // routes/web.php (admin group)
+    Route::resource('quads', QuadController::class)->names('quads');
+});
+Route::get('/availability/quads', [AvailabilityController::class, 'quads'])->name('availability.quads');
+Route::get('/availability/slots', [AvailabilityController::class, 'slots'])
+    ->name('availability.slots');
 Route::get('/tours', [Front\TourController::class, 'page'])->name('tours.page');
+
 

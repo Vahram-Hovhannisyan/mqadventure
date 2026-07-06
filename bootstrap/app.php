@@ -10,6 +10,13 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
+    ->withMiddleware(function (Middleware $middleware) {
+        $middleware->redirectGuestsTo(function ($request) {
+            return $request->is('admin/*') || $request->is('admin')
+                ? route('admin.login')
+                : route('home');
+        });
+    })
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->web(append: [
             \App\Http\Middleware\SetLocale::class,

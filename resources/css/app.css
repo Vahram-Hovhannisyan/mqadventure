@@ -494,3 +494,12 @@ footer {
     transition: opacity .2s;
 }
 .contact-social-btn:hover svg { opacity: 1; }
+
+.hero-bg-video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0; /* keep it below .hero-bg overlay and .hero-content — adjust to match your existing z-index stack */
+}
