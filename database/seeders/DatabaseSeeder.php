@@ -47,11 +47,5 @@ class DatabaseSeeder extends Seeder
                 'value' => $s['value'], 'type' => $s['type'], 'group' => $s['group'],
             ]);
         }
-
-        $this->call([
-            TourSeeder::class,
-            BlockedSlotSeeder::class,
-            QuadSeeder::class,
-        ]);
     }
 }

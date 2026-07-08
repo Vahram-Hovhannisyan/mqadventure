@@ -24,7 +24,7 @@ class NewBookingMail extends Mailable implements ShouldQueue
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: "Նոր հայտ №{$this->booking->id} — {$this->booking->name}",
+            subject: "Նոր հայտ №{$this->booking->id} — {$this->booking->phone}",
         );
     }
 
