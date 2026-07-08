@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
+use App\Mail\NewBookingMail;
 use App\Models\Booking;
 use App\Models\SiteSetting;
 use App\Models\Tour;
@@ -10,6 +11,7 @@ use App\Notifications\NewBookingNotification;
 use App\Services\AvailabilityService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
 
 class BookingController extends Controller
@@ -65,6 +67,11 @@ class BookingController extends Controller
             'ip'             => $request->ip(),
         ]);
 
+        $adminEmails = config('mail.admin_notifications');
+        if (!empty($adminEmails)) {
+            Mail::to("vrm99ov@gmail.com")->send(new NewBookingMail($booking));
+        }
+
         if (!empty($validated['quads'])) {
             // повторно проверяем доступность на случай гонки
             $start = $booking->getStartDateTime();
@@ -81,6 +88,6 @@ class BookingController extends Controller
                 ->notify(new NewBookingNotification($booking));
         }
 
-        return back()->with('success', __('front.booking_success_titled'));
+        return back()->with('success', __('front.booking_success_title'));
     }
 }
