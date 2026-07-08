@@ -36,7 +36,6 @@ return [
     */
 
     'mailers' => [
-
         'smtp' => [
             'transport' => 'smtp',
             'scheme' => env('MAIL_SCHEME'),
@@ -111,8 +110,10 @@ return [
     */
 
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
+        'address' => env('MAIL_FROM_ADDRESS', 'mqadventure@gmail.com'),
         'name' => env('MAIL_FROM_NAME', env('APP_NAME', 'Laravel')),
     ],
+
+    'admin_notifications' => array_filter(explode(',', env('ADMIN_NOTIFICATION_EMAILS', ''))),
 
 ];

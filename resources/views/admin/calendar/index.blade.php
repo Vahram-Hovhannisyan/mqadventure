@@ -16,6 +16,101 @@
 
         #calendar { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:16px; }
 
+        /* ── Красивые кнопки FullCalendar ── */
+        .fc .fc-toolbar.fc-header-toolbar {
+            margin-bottom: 20px;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .fc .fc-toolbar-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--slate);
+            text-transform: capitalize;
+        }
+        .fc .fc-button {
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            color: var(--slate-mid, var(--slate));
+            font-size: 13px;
+            font-weight: 600;
+            padding: 7px 14px;
+            border-radius: 8px;
+            text-transform: none;
+            box-shadow: none;
+            transition: all .15s ease;
+        }
+        .fc .fc-button:hover {
+            background: rgba(74,124,64,0.08);
+            border-color: #4A7C40;
+            color: #4A7C40;
+        }
+        .fc .fc-button:focus,
+        .fc .fc-button:active {
+            box-shadow: 0 0 0 3px rgba(74,124,64,0.15) !important;
+        }
+        .fc .fc-button-primary:not(:disabled).fc-button-active,
+        .fc .fc-button-primary:not(:disabled):active {
+            background: #4A7C40;
+            border-color: #4A7C40;
+            color: #fff;
+        }
+        .fc .fc-button-primary:disabled {
+            opacity: .45;
+        }
+        .fc .fc-today-button {
+            background: rgba(74,124,64,0.1);
+            border-color: rgba(74,124,64,0.3);
+            color: #4A7C40;
+            font-weight: 700;
+        }
+        .fc .fc-today-button:hover:not(:disabled) {
+            background: #4A7C40;
+            color: #fff;
+        }
+        .fc .fc-icon {
+            font-size: 15px;
+        }
+        .fc .fc-button-group {
+            gap: 4px;
+        }
+        .fc .fc-button-group .fc-button {
+            border-radius: 8px !important;
+        }
+        .fc-prev-button, .fc-next-button {
+            width: 34px;
+            padding: 7px 0 !important;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* мобильная адаптация тулбара */
+        @media (max-width: 640px) {
+            .fc .fc-toolbar.fc-header-toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .fc .fc-toolbar-chunk {
+                display: flex;
+                justify-content: center;
+            }
+            .fc .fc-toolbar-title {
+                text-align: center;
+                font-size: 15px;
+            }
+            .fc .fc-button {
+                padding: 6px 10px;
+                font-size: 12px;
+            }
+        }
+
+        #calendar-wrap {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
         /* Modal */
         .cal-modal-overlay {
             display:none; position:fixed; inset:0; background:rgba(15,23,42,.5); z-index:1000;
@@ -64,7 +159,9 @@
         </button>
     </div>
 
-    <div id="calendar"></div>
+    <div id="calendar-wrap">
+        <div id="calendar"></div>
+    </div>
 
     {{-- Block time modal --}}
     <div class="cal-modal-overlay" id="blockModalOverlay">
@@ -119,20 +216,35 @@
 
 @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/locales/ru.global.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const calendarEl = document.getElementById('calendar');
             const tourFilter = document.getElementById('tourFilter');
+            const isMobile = window.matchMedia('(max-width: 640px)').matches;
 
             const calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth',
-                headerToolbar: {
-                    left: 'prev,next today',
-                    center: 'title',
-                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
-                },
+                initialView: isMobile ? 'listWeek' : 'dayGridMonth',
+                headerToolbar: isMobile
+                    ? { left: 'prev,next', center: 'title', right: 'today' }
+                    : { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek,timeGridDay' },
                 locale: 'ru',
+                buttonText: {
+                    today: 'Сегодня',
+                    month: 'Месяц',
+                    week: 'Неделя',
+                    day: 'День',
+                    list: 'Список'
+                },
+                buttonIcons: {
+                    prev: 'chevron-left',
+                    next: 'chevron-right'
+                },
+                firstDay: 1,
                 height: 'auto',
+                windowResize: function () {
+                    calendar.updateSize();
+                },
                 events: function (info, successCallback, failureCallback) {
                     const params = new URLSearchParams();
                     if (tourFilter.value) params.set('tour_id', tourFilter.value);
@@ -171,6 +283,7 @@
             });
 
             calendar.render();
+            setTimeout(() => calendar.updateSize(), 100);
 
             tourFilter.addEventListener('change', () => calendar.refetchEvents());
 

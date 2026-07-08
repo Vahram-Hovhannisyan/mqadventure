@@ -2,14 +2,96 @@
 
 @section('title', __('booking.title', ['id' => $booking->id]))
 
+@push('styles')
+    <style>
+        /* ── Responsive layout for booking detail page ── */
+        .booking-page-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+        .booking-header-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .booking-detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 20px;
+            align-items: start;
+        }
+
+        .info-grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        .info-grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 16px;
+        }
+        .schedule-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        @media (max-width: 900px) {
+            .booking-detail-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .booking-page-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .booking-header-actions {
+                width: 100%;
+            }
+            .booking-header-actions a,
+            .booking-header-actions form,
+            .booking-header-actions button {
+                flex: 1;
+            }
+            .booking-header-actions form {
+                display: flex;
+            }
+            .booking-header-actions .btn {
+                width: 100%;
+                text-align: center;
+                justify-content: center;
+            }
+
+            .info-grid-2,
+            .info-grid-3,
+            .schedule-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .booking-page-header h2 {
+                font-size: 17px;
+            }
+        }
+    </style>
+@endpush
+
 @section('content')
 
-    <div class="page-header">
+    <div class="page-header booking-page-header">
         <div>
             <h2>📋 {{ __('booking.title', ['id' => $booking->id]) }}</h2>
             <p>{{ $booking->created_at->format('d.m.Y H:i') }}</p>
         </div>
-        <div style="display: flex; gap: 10px;">
+        <div class="booking-header-actions">
             <a href="{{ route('admin.booking.index') }}" class="btn btn-ghost btn-sm">← {{ __('booking.back') }}</a>
 
             {{-- PDF Export --}}
@@ -35,7 +117,7 @@
         </div>
     @endif
 
-    <div style="display: grid; grid-template-columns: 1fr 340px; gap: 20px; align-items: start;">
+    <div class="booking-detail-grid">
 
         {{-- Main info --}}
         <div style="display: flex; flex-direction: column; gap: 20px;">
@@ -44,7 +126,7 @@
             <div class="card">
                 <div class="card-header"><h3>👤 {{ __('booking.client') }}</h3></div>
                 <div class="card-body">
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                    <div class="info-grid-2">
                         <div>
                             <div style="font-size: 11px; color: var(--slate-soft); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.08em;">{{ __('booking.name') }}</div>
                             <div style="font-weight: 600; font-size: 15px;">{{ $booking->name }}</div>
@@ -64,7 +146,7 @@
                         @if($booking->ip)
                             <div>
                                 <div style="font-size: 11px; color: var(--slate-soft); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.08em;">IP</div>
-                                <div style="font-size: 12px; color: var(--slate-soft);">{{ $booking->ip }}</div>
+                                <div style="font-size: 12px; color: var(--slate-soft); word-break: break-all;">{{ $booking->ip }}</div>
                             </div>
                         @endif
                     </div>
@@ -75,7 +157,7 @@
             <div class="card">
                 <div class="card-header"><h3>🏔️ {{ __('booking.tour') }}</h3></div>
                 <div class="card-body">
-                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;">
+                    <div class="info-grid-3">
                         <div>
                             <div style="font-size: 11px; color: var(--slate-soft); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.08em;">{{ __('booking.tour') }}</div>
                             <div style="font-weight: 600;">
@@ -114,7 +196,7 @@
                     @if($booking->comment)
                         <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border);">
                             <div style="font-size: 11px; color: var(--slate-soft); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.08em;">{{ __('booking.comment') }}</div>
-                            <div style="font-size: 13px; line-height: 1.6; color: var(--slate);">{{ $booking->comment }}</div>
+                            <div style="font-size: 13px; line-height: 1.6; color: var(--slate); word-break: break-word;">{{ $booking->comment }}</div>
                         </div>
                     @endif
                 </div>
@@ -139,7 +221,7 @@
                     <form method="POST" action="{{ route('admin.booking.updateSchedule', $booking) }}">
                         @csrf @method('PATCH')
 
-                        <div class="form-row" style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+                        <div class="form-row schedule-row">
                             <div class="form-group">
                                 <label>Дата</label>
                                 <input type="date" name="date"
@@ -152,7 +234,7 @@
                             </div>
                         </div>
 
-                        <div class="form-row" style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:14px;">
+                        <div class="form-row schedule-row" style="margin-top:14px;">
                             <div class="form-group">
                                 <label>Людей</label>
                                 <input type="number" name="people" min="1" max="20"
