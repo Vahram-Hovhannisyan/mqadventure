@@ -69,7 +69,7 @@ class BookingController extends Controller
 
         $adminEmails = config('mail.admin_notifications');
         if (!empty($adminEmails)) {
-            Mail::to("vrm99ov@gmail.com")->send(new NewBookingMail($booking));
+            Mail::to($adminEmails)->send(new NewBookingMail($booking));
         }
 
         if (!empty($validated['quads'])) {
