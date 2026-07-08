@@ -123,8 +123,6 @@
 
 <?php $__env->startSection('content'); ?>
 
-    
-    
     <?php
         $heroBg    = \App\Models\SiteSetting::get('hero_bg_image');
         $heroVideo = \App\Models\SiteSetting::get('hero_bg_video');
