@@ -174,14 +174,14 @@
                         <div class="pg-field">
                             <label class="pg-label">Instagram</label>
                             <input type="text" name="instagram"
-                                   value="{{ old('instagram', \App\Models\SiteSetting::get('instagram')?->value['value'] ?? '') }}"
+                                   value="{{ old('instagram', $settings->get('instagram')?->value['value'] ?? '') }}"
                                    placeholder="@username или https://instagram.com/..." />
                             <span class="pg-hint">Username или полная ссылка</span>
                         </div>
                         <div class="pg-field">
                             <label class="pg-label">Facebook</label>
                             <input type="text" name="facebook"
-                                   value="{{ old('facebook', \App\Models\SiteSetting::get('facebook')?->value['value'] ?? '') }}"
+                                   value="{{ old('facebook', $settings->get('facebook')?->value['value'] ?? '') }}"
                                    placeholder="pagename или https://facebook.com/..." />
                             <span class="pg-hint">Название страницы или полная ссылка</span>
                         </div>
