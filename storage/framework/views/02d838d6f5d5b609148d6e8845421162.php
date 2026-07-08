@@ -1,4 +1,3 @@
-
 <?php $__env->startSection('title', __('admin.dashboard.title')); ?>
 <?php $__env->startPush('styles'); ?>
     <?php echo app('Illuminate\Foundation\Vite')(['resources/css/admin-dashboard.css']); ?>

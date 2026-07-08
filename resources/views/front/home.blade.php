@@ -125,8 +125,6 @@
 
 @section('content')
 
-    {{-- HERO --}}
-    {{-- HERO --}}
     @php
         $heroBg    = \App\Models\SiteSetting::get('hero_bg_image');
         $heroVideo = \App\Models\SiteSetting::get('hero_bg_video');
