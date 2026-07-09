@@ -34,6 +34,7 @@ return [
     'people'            => 'հոգի',
     'price_from'        => 'սկսած',
     'per_person'        => 'հոգի',
+    'per_quad'          => 'կվադրոցիկլ',
     'view_route'        => 'Դիտել երթուղին',
     'tour_up_to'        => 'մինչև',
     'tour_book_btn'     => 'Ամրագրել',
