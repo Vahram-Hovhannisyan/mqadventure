@@ -34,6 +34,7 @@ return [
     'people'            => 'чел.',
     'price_from'        => 'от',
     'per_person'        => 'чел.',
+    'per_quad'          => 'квад.',
     'view_route'        => 'Смотреть маршрут',
     'tour_up_to'        => 'до',
     'tour_book_btn'     => 'Забронировать',

@@ -264,7 +264,7 @@
 
                         <div class="tour-price">
                             {{ $tour->getPriceFormatted() }}-{{ __('front.price_from') }}
-                            <span class="tour-price-label">AMD/{{ __('front.per_person') }}</span>
+                            <span class="tour-price-label">AMD/{{ __('front.per_quad') }}</span>
                         </div>
 
                         @if(!empty($tour->route_points) && count($tour->route_points) > 0)

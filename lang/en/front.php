@@ -34,6 +34,7 @@ return [
     'people'            => 'pax',
     'price_from'        => 'from',
     'per_person'        => 'person',
+    'per_quad'          => 'quad bike',
     'view_route'        => 'View Route',
     'tour_up_to'        => 'up to',
     'tour_book_btn'     => 'Book Now',
